@@ -27,7 +27,7 @@ state = {
 }
 
 componentDidMount(){
-    axios.get('https://react-burger-app-f0fd9.firebaseio.com/orders/-M7P27yXbICnK9y8-pBp/ingridients.json')
+    axios.get('https://react-burger-app-f0fd9.firebaseio.com/ingridients.json')
     .then( response => {
 this.setState({ingridients: response.data});
     })
@@ -97,29 +97,19 @@ purchaseCancelHandler=()=>{
 purchaseContinueHandler=()=>{
         //alert('order purchased');
 
-this.setState({loading: true})
 
-    const  order = {
-       ingridients: this.state.ingridients,
-       price: this.state.totalPrice,
-       customer:{
-           name: 'revathi',
-           address: {
-            street: 'westcourt',
-            zipcode: 20171,
-            country: 'usa',
-           },
-           email: 'revathi@gmail.com',
-        } ,
-       delivery: 'fastest' 
-    }   
-axios.post('/orders.json',order)
-    .then(response => { 
-          this.setState({loading: false , purchasing: false});
-       })
-    .catch(error => {
-        this.setState({loading: false, purchasing: false});
-    });
+
+          const queryParam = [];
+          for(let i in this.state.ingridients){
+              queryParam.push(encodeURIComponent(i) + '=' + encodeURIComponent(this.state.ingridients[i]));
+          }
+          queryParam.push('price=' + this.state.totalPrice);
+           const queryString = queryParam.join('&');
+
+          this.props.history.push({
+              pathname: '/checkout',
+              search: '?' + queryString
+          });
 }
   
 
